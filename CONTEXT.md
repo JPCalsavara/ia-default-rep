@@ -16,6 +16,7 @@ Todas as decisões estruturais invioláveis do projeto estão listadas nas [ADRs
 9. **Governança (Auditoria e LGPD)**: Rastreio com `created_by`/`updated_by`. Expressamente proibido logar PII no backend.
 10. **Transações Financeiras**: Prevenção de concorrência com `Idempotency-Key` (evitar duplo clique) e Row Locks (`SELECT FOR UPDATE`).
 11. **Estilização Mobile-First (Tailwind `@apply`)**: Classes HTML semânticas (limpas) + CSS abstraído com `@apply` focando no celular primeiro.
+12. **UX e Anti-IA-ísmos**: Proibido usar Emojis/jargões de IA. Tokens de design via `tailwind.config.js` inspirados no Dribbble. Textos sempre envelopados com `break-words`.
 
 ## Políticas do Projeto
 - **Infra e CI**: Uso mandatório de `docker` e `docker-compose` para dev local. 
