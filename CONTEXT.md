@@ -5,19 +5,17 @@ Este é o repositório central padronizado. Ele foi desenhado para ser previsív
 ## Documentação de Domínio e Decisões
 Todas as decisões estruturais invioláveis do projeto estão listadas nas [ADRs (Architecture Decision Records)](docs/adr/):
 
-1. **Backend Layered Architecture**: Pragmatic Layered Pattern (`app.py` -> `middlewares` -> `schemas/dtos` -> `controllers` -> `repositories` -> `models`).
-2. **Frontend Atomic Components**: Atoms, Molecules, Organisms, Templates, Pages.
-3. **Currency em BIGINT**: O Backend e Banco de Dados apenas tratam inteiros para moedas (R$ 10,50 = `1050`).
-4. **Tratamento Global de Erros de API**: Respostas padronizadas `{ "code": "...", "message": "...", "details": [] }`.
-5. **Soft Delete por Padrão**: Uso de `deleted_at` em todas as tabelas. Nada é apagado via `DELETE` SQL.
-6. **Timezones UTC Everywhere**: Backend armazena e expõe ISO 8601 em UTC puro. Frontend converte para a localidade.
-7. **Nomenclatura, Gatekeeper e Proteção da Main**: Branches no formato `tipo/id-descricao`, issues prefixadas (`[Feat]`), e merge bloqueado exigindo testes + `ai-gatekeeper` + aprovação humana.
-8. **Segurança (JWT/RBAC)**: Autenticação via JSON Web Tokens com validação de Roles (`admin`, `user`) por Middlewares.
-9. **Governança (Auditoria e LGPD)**: Rastreio com `created_by`/`updated_by`. Expressamente proibido logar PII no backend.
-10. **Transações Financeiras**: Prevenção de concorrência com `Idempotency-Key` (evitar duplo clique) e Row Locks (`SELECT FOR UPDATE`).
-11. **Estilização Mobile-First (Tailwind `@apply`)**: Classes HTML semânticas (limpas) + CSS abstraído com `@apply` focando no celular primeiro.
-12. **UX e Anti-IA-ísmos**: Proibido usar Emojis/jargões de IA. Tokens de design via `tailwind.config.js` inspirados no Dribbble. Textos sempre envelopados com `break-words`.
-13. **Shadcn UI e Lucide**: Uso OBRIGATÓRIO do CLI do `shadcn/ui` para instanciar componentes complexos. Ícones padronizados via `lucide-react`.
+1. **001-backend-layered-architecture**: Pragmatic Layered Pattern (`app.py` -> `middlewares` -> `schemas/dtos` -> `controllers` -> `repositories` -> `models`).
+2. **002-frontend-atomic-design**: Atoms, Molecules, Organisms, Templates, Pages.
+3. **003-currency-bigint-cents**: O Backend e Banco de Dados apenas tratam inteiros para moedas (R$ 10,50 = `1050`).
+4. **004-global-error-handling**: Respostas padronizadas `{ "code": "...", "message": "...", "details": [] }`.
+5. **005-soft-delete-default**: Uso de `deleted_at` em todas as tabelas. Nada é apagado via `DELETE` SQL.
+6. **006-utc-timezones**: Backend armazena e expõe ISO 8601 em UTC puro. Frontend converte para a localidade.
+7. **007-branch-protection-and-naming**: Branches no formato `tipo/id-descricao`, issues prefixadas (`[Feat]`), e merge bloqueado exigindo testes + `ai-gatekeeper` + aprovação humana.
+8. **008-security-jwt-rbac**: Autenticação via JSON Web Tokens com validação de Roles (`admin`, `user`) por Middlewares.
+9. **009-data-governance-audit**: Rastreio com `created_by`/`updated_by`. Expressamente proibido logar PII no backend.
+10. **010-financial-transactions-safety**: Prevenção de concorrência com `Idempotency-Key` e Row Locks (`SELECT FOR UPDATE`).
+11. **011-frontend-design-system-and-ux**: Adoção do `shadcn/ui` (Tailwind Inline no JSX) + `lucide-react`. Proibido Emojis e jargões de IA nas telas. Textos sempre envelopados com `break-words`.
 
 ## Políticas do Projeto
 - **Infra e CI**: Uso mandatório de `docker` e `docker-compose` para dev local. 
