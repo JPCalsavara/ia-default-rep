@@ -1,69 +1,27 @@
 ---
 name: feature-builder
-description: Orquestrador de desenvolvimento de ponta a ponta (E2E). Lê a RFC da branch, executa o ciclo TDD para Backend e Frontend, implementa, roda Gatekeeper e auto-corrige falhas.
+description: Orquestrador de desenvolvimento de ponta a ponta (E2E). Lê a RFC da branch, executa o ciclo TDD para Backend e Frontend, usa Shadcn UI e garante que a cobertura seja verde.
 ---
 
-# Feature Builder Skill
+# Feature Builder
 
-Esta skill orquestra o desenvolvimento completo de uma funcionalidade, atuando como um pipeline autônomo que vai desde a leitura da RFC (conforme ADR 0006) até a validação rigorosa de qualidade.
+Use esta skill quando precisar construir uma funcionalidade de ponta a ponta a partir de uma `RFC` já estabelecida no repositório.
 
-## Quando usar
+## Fluxo de Construção (Backend)
+1. Leia a RFC alvo no `.scratch/<feature>/rfc.md`.
+2. Escreva o **Teste de Integração** (TDD) para a nova rota que certifique as regras descritas na RFC.
+3. Desenvolva o código seguindo a Layered Architecture (Middlewares -> Schemas -> Controllers -> Repositories -> Models).
+4. Rode os testes e garanta o comportamento esperado.
 
-Acione esta skill quando você (Agente) receber a instrução de desenvolver uma funcionalidade inteira, assumindo que a RFC já foi elaborada e commitada na branch atual.
-
-## Fluxo de Execução Obrigatório
-
-Siga os passos abaixo rigorosamente na ordem apresentada. Como você atua de forma autônoma, use as ferramentas disponíveis para invocar sub-agentes ou executar as skills recomendadas.
-
-### Passo 1: Leitura do Escopo (Docs-Driven)
-* Localize o documento `.md` mais recente em `docs/rfc/` ou leia a RFC commitada na raiz da branch atual.
-* Extraia todas as regras de negócio, modelagem de domínio, contratos de API e requisitos de UI descritos.
-* **Critério de parada:** Se não houver uma RFC clara, aborte a execução e instrua o usuário a rodar a skill `refine-issue` (ADR 0006) primeiro.
-
-### Passo 2: Ciclo de Backend (Java/Spring Boot)
-1. **Construção de Testes (`tdd`):**
-   * Gere os testes de integração (`@SpringBootTest` com banco real) cobrindo os cenários Feliz, Triste e Malformado (ADR 0002).
-   * Verifique se os testes estão falhando (Red phase).
-2. **Implementação (`implement`):**
-   * Desenvolva o Controller, Service e Repositories necessários para fazer os testes passarem.
-   * Respeite os padrões descritos em `CONTEXT.md` e na documentação arquitetural.
-
-### Passo 3: Ciclo de Frontend (React/Vite)
-1. **Prototipagem e Telas (`ui-builder`):**
-   * Acione a skill `ui-builder` para implementar as páginas e componentes descritos na RFC, consumindo os endpoints reais do Backend que acabaram de ser criados.
-   * Adicione a tipagem rigorosa para a API (via Axios).
-2. **Testes de UI/E2E:**
-   * Crie ou atualize os testes do Cypress em `cypress/e2e/` para cobrir os fluxos do usuário nas telas novas.
-
-### Passo 4: Code Explanation (Explain)
-* Escreva um resumo estruturado e conciso detalhando:
-  * O fluxo implementado.
-  * As classes e componentes principais criados.
-  * Como a integração entre o back e o front foi realizada.
-* Exiba esse resumo para o usuário (ou grave no Artifact Directory para exibição).
-
-### Passo 5: Validação do Quality Gate (Gatekeeper)
-Execute a verificação de todos os testes e do Gatekeeper. Para testes, rode os comandos do repositório:
-```bash
-# Backend
-cd backend && ./mvnw test
-# Frontend (se houver vitest configurado)
-cd frontend && npm run test
-# Gatekeeper AI
-bash .agents/skills/ai-gatekeeper-reviewer/scripts/run_review.sh --target .
-```
-
-### Passo 6: Auto-Correção (Diagnosing Bugs)
-* **Se o Gatekeeper ou algum teste falhar:**
-  1. Leia os relatórios de falha (logs do Maven, Cypress ou o review em markdown do Gatekeeper).
-  2. Acione o ciclo da skill `diagnosing-bugs` para isolar, hipotetizar e fixar o problema.
-  3. Re-execute o Passo 5.
-  4. **Limite:** Faça isso no máximo **3 vezes**. Se o erro persistir na 3ª tentativa, aborte o pipeline e exiba as falhas para o desenvolvedor resolver manualmente.
+## Fluxo de Construção (Frontend)
+1. **Componentização e Design**:
+   - Respeite o Atomic Design.
+   - **CRÍTICO: Shadcn UI**. Antes de criar qualquer UI complexa (ex: botões padronizados, cards, seletores, modais), você **DEVE** tentar importar rodando o comando CLI: `npx shadcn@latest add [componente]`. NUNCA construa modais/popovers complexos do zero.
+   - **Ícones**: Utilize EXCLUSIVAMENTE importações da biblioteca `lucide-react`.
+2. **Responsividade**:
+   - Use as diretivas Mobile-First.
+   - Aplique sempre proteções em textos dinâmicos (ex: `break-words`, `truncate`).
+3. Verifique o componente visualmente / escreva os testes Cypress correspondentes para cobrir as ações principais de clique e renderização.
 
 ## Finalização
-Após passar com sucesso pelo Gatekeeper (Quality Gate verde), a skill deve parar e exibir um relatório final. 
-Em seguida, **instrua explicitamente o usuário (desenvolvedor humano)** a acionar a skill `git-flow`. A skill `git-flow` será a responsável por:
-1. Validar as mudanças finais.
-2. Gerar as mensagens de commit semânticas (`feat(US-XX): ...`).
-3. Fazer o push (subida) para a branch remota.
-4. Acompanhar e garantir a abertura do Merge Request.
+Não faça commit de imediato se o frontend ou backend quebrarem. Itere rigorosamente rodando testes locais com `docker-compose` até a branch ficar estável. Quando terminar, repasse a bola para a skill `git-flow`.
